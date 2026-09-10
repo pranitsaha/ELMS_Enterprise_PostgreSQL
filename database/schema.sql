@@ -1,0 +1,2 @@
+CREATE TABLE employees(id SERIAL PRIMARY KEY,name VARCHAR(100));
+CREATE TABLE leaves(id SERIAL PRIMARY KEY,employee_id INT,status VARCHAR(20));
