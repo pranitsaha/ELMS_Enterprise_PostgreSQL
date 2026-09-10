@@ -61,6 +61,44 @@ const applyLeave = async (req, res) => {
   }
 };
 
+
+const getLeaveHistory = async (req, res) => {
+
+  try {
+
+    const userId = req.user.id;
+
+    const result = await pool.query(
+      `
+      SELECT
+        id,
+        leave_type,
+        start_date,
+        end_date,
+        total_days,
+        reason,
+        status
+      FROM leave_requests
+      WHERE employee_id = $1
+      ORDER BY id DESC
+      `,
+      [userId]
+    );
+
+    res.json(result.rows);
+
+  } catch (error) {
+
+    res.status(500).json({
+      message: error.message
+    });
+
+  }
+
+};
+
+
 module.exports = {
-  applyLeave
+  applyLeave,
+  getLeaveHistory
 };

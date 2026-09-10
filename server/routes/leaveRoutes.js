@@ -6,13 +6,20 @@ const authMiddleware =
 require("../middleware/authMiddleware");
 
 const {
-  applyLeave
+  applyLeave,
+  getLeaveHistory
 } = require("../controllers/leaveController");
 
 router.post(
   "/apply",
   authMiddleware,
   applyLeave
+);
+
+router.get(
+  "/history",
+  authMiddleware,
+  getLeaveHistory
 );
 
 module.exports = router;

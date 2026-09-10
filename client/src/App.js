@@ -10,6 +10,7 @@ import ApplyLeave from "./pages/ApplyLeave";
 import AdminApproval from "./pages/AdminApproval";
 import Register from "./pages/Register";
 import Reports from "./pages/Reports";
+import LeaveHistory from "./pages/LeaveHistory";
 
 function App() {
   return (
@@ -44,8 +45,12 @@ function App() {
           path="/reports"
           element={<Reports />}
         />
-
+        <Route
+          path="/leave-history"
+          element={<LeaveHistory />}
+        />
       </Routes>
+      
     </BrowserRouter>
   );
 }

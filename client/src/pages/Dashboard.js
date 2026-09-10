@@ -111,7 +111,14 @@ function Dashboard() {
   >
     Apply Leave
   </button>
-
+  <button
+    className="btn btn-secondary btn-lg ms-3"
+    onClick={() =>
+      navigate("/leave-history")
+    }
+  >
+    Leave History
+  </button>
   {role === "Admin" && (
     <button
       className="btn btn-danger btn-lg ms-3"
