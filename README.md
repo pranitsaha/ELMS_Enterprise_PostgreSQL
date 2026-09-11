@@ -1,169 +1,119 @@
 # ELMS Project
-Full project blueprint with frontend/backend structure and run guide.
+Default Ports
+Service	PortFrontend	3000
+Backend	5000
+PostgreSQL	5432
 
 
-Why PostgreSQL?
+Backend Start:
 
-For your project presentation, write:
+    cd server
+    npm init -y
+    npm install express pg dotenv cors bcryptjs jsonwebtoken
+    npm install nodemon --save-dev
+    npm install pg
+    node server.js(Server running on port 5000)
 
-PostgreSQL was selected because it provides strong relational data management, ACID compliance, robust security, and efficient handling of employee-leave relationships. The Employee Leave Management System requires structured data with foreign key constraints, making PostgreSQL a suitable choice over NoSQL databases.
+Frontend Start:
 
+    cd client
+    npx create-react-app .
+    npm install axios react-router-dom bootstrap
+    npm start
 
-Registration API
-
-Endpoint:
-POST /api/auth/register
-
-Purpose:
-Allows new employees to register into the Leave Management System.
-
-Features:
-- Validates user input
-- Checks duplicate email
-- Encrypts password using bcrypt
-- Stores employee details in PostgreSQL
-- Creates employee with default leave balance of 20 days
-
-GitHub Copilot Usage:
-Used GitHub Copilot to generate Express route handlers,
-bcrypt password hashing logic, PostgreSQL queries,
-and API response structures.
+    Local:            http://localhost:3000
 
 
+Database settings in .env:
 
-Login & JWT Authentication
-
-Endpoint:
-POST /api/auth/login
-
-Purpose:
-Authenticates employees and administrators.
-
-Features:
-- Validates email and password
-- Compares encrypted passwords using bcrypt
-- Generates JWT token
-- Supports role-based access control
-- Protects private API endpoints
-
-JWT Payload:
-{
-  id,
-  email,
-  role
-}
-
-GitHub Copilot Usage:
-Used GitHub Copilot to generate login controller logic,
-JWT authentication middleware,
-password verification using bcrypt,
-and frontend login page components.
+    DB_HOST=localhost
+    DB_PORT=5432
+    DB_USER=postgres
+    DB_PASSWORD=yourpassword
+    DB_NAME=leave_management
+    JWT_SECRET=mysecret
 
 
+Database:
+  
+  CREATE DATEBASE IN POSTGRESQL
 
-Employee Dashboard
-
-Purpose:
-Provides a summary of the employee's leave information.
-
-Features:
-- Total Leave Allocation
-- Used Leave Count
-- Available Leave Balance
-- Pending Leave Requests
-
-API Endpoint:
-GET /api/dashboard
-
-Security:
-Protected using JWT Authentication.
-
-Technologies:
-- React JS
-- Express JS
-- PostgreSQL
-- Bootstrap
-
-GitHub Copilot Usage:
-GitHub Copilot assisted in generating
-dashboard API logic,
-PostgreSQL queries,
-React functional components,
-Axios integration,
-and Bootstrap dashboard layouts.
+    CREATE DATABASE leave_management;
 
 
+  CREATE TABLE UNDER leave_management TABLE IN POSTGRESQL
 
-Admin Leave Approval Module
+  CREATE TABLE employees (
+    id SERIAL PRIMARY KEY,
+    employee_id VARCHAR(20) UNIQUE,
+    name VARCHAR(100),
+    email VARCHAR(100) UNIQUE,
+    password VARCHAR(255),
+    department VARCHAR(100),
+    role VARCHAR(20),
+    leave_balance INT DEFAULT 20
+  );
 
-Purpose:
-Allows administrators to review and manage leave requests.
+  CREATE TABLE leaves (
+    id SERIAL PRIMARY KEY,
+    employee_id INT,
+    leave_type VARCHAR(50),
+    start_date DATE,
+    end_date DATE,
+    reason TEXT,
+    status VARCHAR(20) DEFAULT 'Pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-Backend APIs:
-GET /api/admin/leaves
-PUT /api/admin/approve/:id
-PUT /api/admin/reject/:id
+    FOREIGN KEY(employee_id)
+    REFERENCES employees(id)
+  );
 
-Features:
-- View all leave requests
-- Approve leave
-- Reject leave
-- Role-based access control
-- Admin-only dashboard functionality
+  CREATE TABLE leave_requests (
+    id SERIAL PRIMARY KEY,
+    employee_id INT NOT NULL,
+    leave_type VARCHAR(50),
+    start_date DATE,
+    end_date DATE,
+    total_days INT,
+    reason TEXT,
+    status VARCHAR(20) DEFAULT 'Pending',
+    applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-Frontend:
-- Admin Approval Dashboard
-- Leave Request Table
-- Approve Button
-- Reject Button
+    CONSTRAINT fk_employee
+    FOREIGN KEY (employee_id)
+    REFERENCES employees(id)
+  );
 
-Security:
-JWT Authentication
-Admin Role Validation
+  CREATE TABLE leave_audit (
+    id SERIAL PRIMARY KEY,
+    leave_request_id INT,
+    admin_id INT,
+    action VARCHAR(20),
+    remarks TEXT,
+    action_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-GitHub Copilot Usage:
-Used Copilot to generate PostgreSQL queries,
-role-based middleware,
-React approval dashboards,
-and leave approval APIs.
+    FOREIGN KEY (leave_request_id)
+    REFERENCES leave_requests(id),
 
+    FOREIGN KEY (admin_id)
+    REFERENCES employees(id)
+  );
 
+  CREATE TABLE leave_requests (
 
+    id SERIAL PRIMARY KEY,
+    employee_id INT,
+    leave_type VARCHAR(50),
+    start_date DATE,
+    end_date DATE,
+    total_days INT,
+    reason TEXT,
+    status VARCHAR(20)
+    DEFAULT 'Pending',
 
-Reports Module
+    created_at TIMESTAMP
+    DEFAULT CURRENT_TIMESTAMP,
 
-Purpose:
-Provides administrative insights into employee leave activity.
-
-Features:
-- Total Employee Count
-- Total Leave Requests
-- Approved Requests
-- Rejected Requests
-- Pending Requests
-
-API:
-GET /api/reports
-
-Access:
-Admin Only
-
-Frontend:
-Interactive report dashboard with summary cards.
-
-Technologies:
-React, Express, PostgreSQL, JWT Authentication
-
-GitHub Copilot Usage:
-Used GitHub Copilot to generate PostgreSQL aggregation queries,
-admin-only APIs, React report components, and dashboard analytics UI.
-
-
-
-
-GitHub Copilot was used to generate:
-- React table component
-- Axios API integration
-- Leave history controller
-- PostgreSQL queries
-- Status badge UI rendering
+    FOREIGN KEY(employee_id)
+    REFERENCES employees(id)
+  );
