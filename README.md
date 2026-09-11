@@ -1,4 +1,4 @@
-# ELMS Enterprise PostgreSQL
+# ELMS Project
 Full project blueprint with frontend/backend structure and run guide.
 
 
